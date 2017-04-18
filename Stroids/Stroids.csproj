@@ -1,0 +1,96 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{AA513E90-6D7E-4631-9098-18FDBF9F986D}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Stroids</RootNamespace>
+    <AssemblyName>Stroids</AssemblyName>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>Stroids.Program</StartupObject>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Asteroid.cs" />
+    <Compile Include="AsteroidBelt.cs" />
+    <Compile Include="Bullet.cs" />
+    <Compile Include="Explosion.cs" />
+    <Compile Include="Explosions.cs" />
+    <Compile Include="MainWin.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MainWin.Designer.cs">
+      <DependentUpon>MainWin.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Game.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Score.cs" />
+    <Compile Include="ScreenCanvas.cs" />
+    <Compile Include="ScreenObject.cs" />
+    <Compile Include="Ship.cs" />
+    <Compile Include="Sounds.cs" />
+    <Compile Include="TitleScreen.cs" />
+    <EmbeddedResource Include="MainWin.resx">
+      <DependentUpon>MainWin.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="wavs\bangLarge.wav" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="wavs\bangMedium.wav" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="wavs\bangSmall.wav" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="wavs\extraShip.wav" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="wavs\fire.wav" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="wavs\thrust.wav" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
