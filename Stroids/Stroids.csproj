@@ -1,91 +1,88 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <Import Project="$(MSBuildExtensionsPath)\MonoGame\v3.0\MonoGame.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\MonoGame\v3.0\MonoGame.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{AA513E90-6D7E-4631-9098-18FDBF9F986D}</ProjectGuid>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{9B32FB54-7F7E-4E79-8EEC-B636A796D076}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Stroids</RootNamespace>
     <AssemblyName>Stroids</AssemblyName>
-    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <MonoGamePlatform>Windows</MonoGamePlatform>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkProfile />
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <OutputPath>bin\$(MonoGamePlatform)\$(Platform)\$(Configuration)\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;WINDOWS</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+    <OutputPath>bin\$(MonoGamePlatform)\$(Platform)\$(Configuration)\</OutputPath>
+    <DefineConstants>TRACE;WINDOWS</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>Icon.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject>Stroids.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Windows.Forms" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Asteroid.cs" />
-    <Compile Include="AsteroidBelt.cs" />
-    <Compile Include="Bullet.cs" />
-    <Compile Include="Explosion.cs" />
-    <Compile Include="Explosions.cs" />
-    <Compile Include="MainWin.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="MainWin.Designer.cs">
-      <DependentUpon>MainWin.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Game.cs" />
+    <Compile Include="Game\Asteroid.cs" />
+    <Compile Include="Game\AsteroidBelt.cs" />
+    <Compile Include="Game\Bullet.cs" />
+    <Compile Include="Game\Explosions.cs" />
+    <Compile Include="Game\Explosion.cs" />
+    <Compile Include="AsteroidsGame.cs" />
+    <Compile Include="Game\Level.cs" />
     <Compile Include="Program.cs" />
-    <Compile Include="Score.cs" />
-    <Compile Include="ScreenCanvas.cs" />
-    <Compile Include="ScreenObject.cs" />
-    <Compile Include="Ship.cs" />
-    <Compile Include="Sounds.cs" />
-    <Compile Include="TitleScreen.cs" />
-    <EmbeddedResource Include="MainWin.resx">
-      <DependentUpon>MainWin.cs</DependentUpon>
-    </EmbeddedResource>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Game\Score.cs" />
+    <Compile Include="Game\ScreenCanvas.cs" />
+    <Compile Include="Game\ScreenObject.cs" />
+    <Compile Include="Game\Ship.cs" />
+    <Compile Include="Game\TitleScreen.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="wavs\bangLarge.wav" />
+    <Reference Include="MonoGame.Framework">
+      <HintPath>$(MonoGameInstallDirectory)\MonoGame\v3.0\Assemblies\Windows\MonoGame.Framework.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="wavs\bangMedium.wav" />
+    <Content Include="Content\Sounds\bangLarge.wav" />
+    <Content Include="Content\Sounds\bangMedium.wav" />
+    <Content Include="Content\Sounds\bangSmall.wav" />
+    <Content Include="Content\Sounds\extraShip.wav" />
+    <Content Include="Content\Sounds\fire.wav" />
+    <Content Include="Content\Sounds\thrust.wav" />
+    <Content Include="Icon.ico" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="wavs\bangSmall.wav" />
+    <MonoGameContentReference Include="Content\Content.mgcb" />
+    <None Include="app.manifest" />
   </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="wavs\extraShip.wav" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="wavs\fire.wav" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="wavs\thrust.wav" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Properties\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(MSBuildExtensionsPath)\MonoGame\v3.0\MonoGame.Content.Builder.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
