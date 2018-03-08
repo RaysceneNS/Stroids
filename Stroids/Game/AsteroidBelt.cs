@@ -1,10 +1,11 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 
 namespace Stroids.Game
 {
-    internal class AsteroidBelt
+    internal class AsteroidBelt : IEnumerable<Asteroid>
     {
         private const int SafeDistance = 2000;
         private List<Asteroid> _asteroids;
@@ -63,11 +64,6 @@ namespace Stroids.Game
             return num;
         }
 
-        public int Count()
-        {
-            return _asteroids.Count;
-        }
-
         public void Draw(ScreenCanvas sc, int x, int y)
         {
             foreach (var asteroid in _asteroids)
@@ -112,5 +108,14 @@ namespace Stroids.Game
             }
         }
 
+        public IEnumerator<Asteroid> GetEnumerator()
+        {
+            return this._asteroids.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return this._asteroids.GetEnumerator();
+        }
     }
 }

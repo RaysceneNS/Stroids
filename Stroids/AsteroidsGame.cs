@@ -1,7 +1,10 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Stroids.ai;
 using Stroids.Game;
+using Matrix = Microsoft.Xna.Framework.Matrix;
 
 namespace Stroids
 {
@@ -11,7 +14,6 @@ namespace Stroids
     public class AsteroidsGame : Microsoft.Xna.Framework.Game
     {
         GraphicsDeviceManager _graphics;
-        SpriteBatch _spriteBatch;
         private BasicEffect _basicEffect;
         
         private readonly TitleScreen _currTitle;
@@ -20,21 +22,54 @@ namespace Stroids
         private GameState _gameState;
         private readonly Score _score;
         private readonly ScreenCanvas _screenCanvas;
-
         private KeyboardState _previousState;
+        private readonly Population _population;
 
-        public AsteroidsGame()
+        private static AsteroidsGame _instance;
+        private static readonly object SyncRoot = new object();
+
+        /// <summary>
+        /// The one and only game instance
+        /// </summary>
+        public static AsteroidsGame Instance
+        {
+            get
+            {
+                if (_instance == null)
+                {
+                    lock (SyncRoot)
+                    {
+                        if (_instance == null)
+                            _instance = new AsteroidsGame();
+                    }
+                }
+                return _instance;
+            }
+        }
+
+        private AsteroidsGame()
         {
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
 
-            //_graphics.IsFullScreen = true;
             _gameState = GameState.Init;
             _screenCanvas = new ScreenCanvas();
             _score = new Score();
             _currTitle = new TitleScreen();
+
+            _population = new Population(10);
+
+            this.IsFixedTimeStep = true;
         }
 
+        /// <summary>
+        /// Returns the current level in the game
+        /// </summary>
+        internal Level Level
+        {
+            get { return _level; }
+        }
+        
         /// <summary>
         /// Allows the game to perform any initialization it needs to before starting to run.
         /// This is where it can query for any required services and load any non-graphic
@@ -54,9 +89,6 @@ namespace Stroids
         /// </summary>
         protected override void LoadContent()
         {
-            // Create a new SpriteBatch, which can be used to draw textures.
-            _spriteBatch = new SpriteBatch(GraphicsDevice);
-            
             _basicEffect = new BasicEffect(GraphicsDevice)
             {
                 World = Matrix.Identity,
@@ -82,7 +114,7 @@ namespace Stroids
         protected override void Update(GameTime gameTime)
         {
             // Poll for current keyboard state
-            KeyboardState state = Keyboard.GetState();
+            var state = Keyboard.GetState();
 
             switch (_gameState)
             {
@@ -92,6 +124,13 @@ namespace Stroids
                     if (_gameState == GameState.Game)
                     {
                         //transition from title to game. 
+                        _score.Reset();
+                        _level.StartGame();
+                    }
+                    if (_gameState == GameState.Evolve)
+                    {
+                        //transition from title to game. 
+                        this.TargetElapsedTime = new TimeSpan(0, 0, 0, 0, 1);
                         _score.Reset();
                         _level.StartGame();
                     }
@@ -113,12 +152,56 @@ namespace Stroids
                     }
                     break;
                 }
+                case GameState.Evolve:
+                {
+                    //if any players are alive then update them
+                    _population.UpdateActive();
+
+                    var newState = _level.Update(state, _previousState);
+
+                    if (newState == GameState.Title)
+                    {
+                        if (_level.Done())
+                        {
+                            //game over for this player.. 
+                            var activePlayer = _population.ActivePlayer();
+                            activePlayer.Score = _score.CurrentScore;
+                            activePlayer.HitRate = _score.ShotsHit / (float) Level.ShotsFired;
+
+                            //select the next in line to try
+                            if (_population.SelectNextPlayer())
+                            {
+                                _score.Reset();
+                                _level.StartGame();
+                            }
+                            else
+                            {
+                                //all the players have played their last upon the stage of life,
+                                // score each and perform a selection of the fitest players to pass
+                                // their genetic material to the next gen.
+                                _population.NaturalSelection();
+
+                                //reset the score and let this next gen play
+                                _score.Reset();
+                                _level.StartGame();
+                            }
+                        }
+                        else
+                        {
+                            //game evolution exited 
+                            _gameState = GameState.Title;
+                            //transition to title
+                            _score.CancelGame();
+                            _currTitle.Reset();
+                        }
+                    }
+                }
+                break;
             }
             
             _previousState = state;
             base.Update(gameTime);
         }
-
 
         /// <summary>
         /// This is called when the game should draw itself.
@@ -138,6 +221,7 @@ namespace Stroids
 
             _screenCanvas.Clear();
             DrawHud(width, height);
+
             switch (_gameState)
             {
                 case GameState.Title:
@@ -148,6 +232,14 @@ namespace Stroids
                 case GameState.Game:
                 {
                     _level.Draw(_screenCanvas, width, height);
+                    break;
+                }
+                case GameState.Evolve:
+                {
+                    _level.Draw(_screenCanvas, width, height);
+
+                    //print evolution stats
+                    _screenCanvas.AddText($"GEN {_population.Generation}-{_population.ActiveIndex}", Justify.Right, 100, 200, 400, width, height);
                     break;
                 }
             }
@@ -184,6 +276,7 @@ namespace Stroids
             Init,
             Title,
             Game,
+            Evolve,
             Exit
         }
     }

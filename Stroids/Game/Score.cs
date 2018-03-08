@@ -9,6 +9,7 @@ namespace Stroids.Game
         private int _hiScore;
         private int _score;
         private int _ships;
+        private int _shotsHit;
         internal event Action OnExtraShip;
 
 
@@ -24,17 +25,26 @@ namespace Stroids.Game
         {
             get { return _ships; }
         }
+
         public int HiScore
         {
             get { return _hiScore; }
         }
+
         public int CurrentScore
         {
             get { return _score; }
         }
 
+        public int ShotsHit
+        {
+            get { return _shotsHit; }
+        }
+
         public void AddScore(int score)
         {
+            _shotsHit = ShotsHit + 1;
+
             _score += score;
             if (_score >= _freeShip)
             {

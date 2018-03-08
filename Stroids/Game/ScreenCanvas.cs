@@ -47,6 +47,9 @@ namespace Stroids.Game
 
             switch (chDraw)
             {
+                case '-':
+                    AddPolyLine(new Point(letterLeft+2, centerY), new Point(letterRight-2, centerY));
+                    break;
                 case '0':
                 case 'O':
                     AddPolyLine(new Point(leftMargin, topMargin), new Point(letterRight, topMargin)

@@ -34,6 +34,11 @@ namespace Stroids.Game
                 return AsteroidsGame.GameState.Game;
             }
 
+            if (state.IsKeyDown(Keys.E) && !previousState.IsKeyDown(Keys.E))
+            {
+                return AsteroidsGame.GameState.Evolve;
+            }
+            
             if (state.IsKeyDown(Keys.Escape) && !previousState.IsKeyDown(Keys.Escape))
             {
                 return AsteroidsGame.GameState.Exit;
