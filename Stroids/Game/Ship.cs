@@ -96,7 +96,7 @@ namespace Stroids.Game
         {
             _thrustOn = true;
 
-            VelocityX += (float)(-(1.5 * Math.Sin(Radians)));
+            VelocityX += (float)-(1.5 * Math.Sin(Radians));
             if (VelocityX > MaxVelocity)
                 VelocityX = MaxVelocity;
             if (VelocityX < -MaxVelocity)

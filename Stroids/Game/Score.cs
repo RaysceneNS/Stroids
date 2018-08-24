@@ -6,77 +6,60 @@ namespace Stroids.Game
     {
         private const int FreeShipIncrement = 10000;
         private int _freeShip;
-        private int _hiScore;
-        private int _score;
-        private int _ships;
-        private int _shotsHit;
         internal event Action OnExtraShip;
-
-
+        
         public Score()
         {
-            _ships = 0;
-            _score = 0;
-            _hiScore = 0;
+            Ships = 0;
+            CurrentScore = 0;
+            HiScore = 0;
             _freeShip = FreeShipIncrement;
         }
 
-        public int Ships
-        {
-            get { return _ships; }
-        }
+        public int Ships { get; private set; }
 
-        public int HiScore
-        {
-            get { return _hiScore; }
-        }
+        public int HiScore { get; private set; }
 
-        public int CurrentScore
-        {
-            get { return _score; }
-        }
+        public int CurrentScore { get; private set; }
 
-        public int ShotsHit
-        {
-            get { return _shotsHit; }
-        }
+        public int ShotsHit { get; private set; }
 
         public void AddScore(int score)
         {
-            _shotsHit = ShotsHit + 1;
+            ShotsHit = ShotsHit + 1;
 
-            _score += score;
-            if (_score >= _freeShip)
+            CurrentScore += score;
+            if (CurrentScore >= _freeShip)
             {
-                _ships++;
+                Ships++;
                 _freeShip += FreeShipIncrement;
                 OnExtraShip?.Invoke();
             }
-            if (_score >= 1000000)
-                _score = _score % 1000000;
-            if (_score > _hiScore)
-                _hiScore = _score;
+            if (CurrentScore >= 1000000)
+                CurrentScore = CurrentScore % 1000000;
+            if (CurrentScore > HiScore)
+                HiScore = CurrentScore;
         }
 
         public void CancelGame()
         {
-            _ships = 0;
+            Ships = 0;
         }
 
         public void UseNewShip()
         {
-            _ships--;
+            Ships--;
         }
 
         public bool HasReserveShips()
         {
-            return _ships > 1;
+            return Ships > 1;
         }
 
         public void Reset()
         {
-            _ships = 3;
-            _score = 0;
+            Ships = 3;
+            CurrentScore = 0;
             _freeShip = FreeShipIncrement;
         }
     }

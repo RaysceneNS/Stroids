@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 using Microsoft.Xna.Framework;
 
 namespace Stroids.Game
 {
-    internal class ScreenObject
+    [Serializable]
+    internal class ScreenObject : ISerializable
     {
         protected readonly List<Point> Points;
         public readonly List<Point> PointsTransformed;
@@ -27,6 +29,28 @@ namespace Stroids.Game
             VelocityX = 0;
             VelocityY = 0;
             CurrLoc = location;
+        }
+
+        public ScreenObject(SerializationInfo info, StreamingContext context)
+        {
+            Radians = (float)info.GetValue("rads", typeof(float));
+            Points = new List<Point>(20);
+            PointsTransformed = new List<Point>(20);
+
+            int len = info.GetInt32("count");
+
+            for (int i = 0; i < len; i++)
+            {
+                int x = info.GetInt32("ptX" + i);
+                int y = info.GetInt32("ptY" + i);
+                var pt = new Point(x,y);
+                AddPoint(pt);
+            }
+
+            VelocityX = (float)info.GetValue("velocityX", typeof(float));
+            VelocityY = (float)info.GetValue("velocityY", typeof(float));
+
+            CurrLoc = new Point( (int)info.GetValue("currLocX", typeof(int)), (int)info.GetValue("currLocY", typeof(int)));
         }
 
         protected void AddPoint(Point pt)
@@ -117,6 +141,27 @@ namespace Stroids.Game
                 PointsTransformed.Add(new Point((int)(item.X * cos + item.Y * sin),
                     (int)(item.X * sin - item.Y * cos)));
             }
+        }
+
+        public void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            info.AddValue("rads", Radians);
+
+            info.AddValue("count", Points.Count);
+            for (int i = 0; i < Points.Count; i++)
+            {
+                var pt = Points[i];
+                info.AddValue("ptX"+i, pt.X);
+                info.AddValue("ptY"+i, pt.Y);
+            }
+
+            //info.AddValue("transformed", PointsTransformed);
+
+            info.AddValue("velocityX", VelocityX);
+            info.AddValue("velocityY", VelocityY);
+
+            info.AddValue("currLocX", CurrLoc.X);
+            info.AddValue("currLocY", CurrLoc.Y);
         }
     }
 }

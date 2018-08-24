@@ -53,7 +53,6 @@ namespace Stroids.ai
 
             var f = new float[_rows, n._cols];
 
-            //for each spot in the new matrix
             for (int i = 0; i < this._rows; i++)
             {
                 for (int j = 0; j < n._cols; j++)
@@ -161,7 +160,7 @@ namespace Stroids.ai
                     if (rand < mutationRate)
                     {
                         //if chosen to be mutated
-                        var mutation = _matrix[i,j] + ((float)r.NextGaussian() / 5f);//add a random value to it(can be negative)
+                        var mutation = _matrix[i,j] + (float)r.NextGaussian() / 5f;//add a random value to it(can be negative)
 
                         //clamp the boundaries to 1 and -1
                         if( mutation > 1)
@@ -180,7 +179,7 @@ namespace Stroids.ai
         }
 
         /// <summary>
-        /// returns a matrix which has a random number of vaules from this matrix and the rest from the parameter matrix
+        /// returns a matrix which has a random number of vaules from this matrix and the rest from the partner matrix
         /// </summary>
         /// <param name="partner"></param>
         /// <returns></returns>
@@ -218,15 +217,15 @@ namespace Stroids.ai
         [Pure]
         public Matrix Clone()
         {
-            var clone = new float[_rows, _cols];
+            var array = new float[_rows, _cols];
             for (int i = 0; i < _rows; i++)
             {
                 for (int j = 0; j < _cols; j++)
                 {
-                    clone[i, j] = _matrix[i, j];
+                    array[i, j] = _matrix[i, j];
                 }
             }
-            return new Matrix(clone);
+            return new Matrix(array);
         }
     }
 }

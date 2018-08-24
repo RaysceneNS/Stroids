@@ -48,7 +48,7 @@ namespace Stroids.Game
             switch (chDraw)
             {
                 case '-':
-                    AddPolyLine(new Point(letterLeft+2, centerY), new Point(letterRight-2, centerY));
+                    AddPolyLine(new Point(letterLeft + 2, centerY), new Point(letterRight - 2, centerY));
                     break;
                 case '0':
                 case 'O':
@@ -166,66 +166,83 @@ namespace Stroids.Game
                         , new Point(letterRight, letterBottom));
                     break;
                 case 'L':
-                    AddPolyLine(new Point(leftMargin, topMargin), new Point(leftMargin, letterBottom)
-                        , new Point(letterRight, letterBottom));
+                    AddPolyLine(new Point(leftMargin, topMargin),
+                        new Point(leftMargin, letterBottom),
+                        new Point(letterRight, letterBottom));
                     break;
                 case 'M':
-                    AddPolyLine(new Point(leftMargin, letterBottom), new Point(leftMargin, topMargin)
-                        , new Point(centerX, centerY)
-                        , new Point(letterRight, topMargin)
-                        , new Point(letterRight, letterBottom));
+                    AddPolyLine(new Point(leftMargin, letterBottom), 
+                        new Point(leftMargin, topMargin),
+                        new Point(centerX, centerY),
+                        new Point(letterRight, topMargin),
+                        new Point(letterRight, letterBottom));
                     break;
                 case 'N':
-                    AddPolyLine(new Point(leftMargin, letterBottom), new Point(leftMargin, topMargin)
-                        , new Point(letterRight, letterBottom)
-                        , new Point(letterRight, topMargin));
+                    AddPolyLine(new Point(leftMargin, letterBottom),
+                        new Point(leftMargin, topMargin),
+                        new Point(letterRight, letterBottom),
+                        new Point(letterRight, topMargin));
                     break;
                 case 'P':
-                    AddPolyLine(new Point(leftMargin, letterBottom), new Point(leftMargin, topMargin)
-                        , new Point(letterRight, topMargin)
-                        , new Point(letterRight, centerY)
-                        , new Point(leftMargin, centerY));
+                    AddPolyLine(new Point(leftMargin, letterBottom), 
+                        new Point(leftMargin, topMargin),
+                        new Point(letterRight, topMargin),
+                        new Point(letterRight, centerY),
+                        new Point(leftMargin, centerY));
                     break;
                 case 'Q':
-                    AddPolyLine(new Point(leftMargin, topMargin), new Point(letterRight, topMargin)
-                        , new Point(letterRight, letterBottom)
-                        , new Point(leftMargin, letterBottom)
-                        , new Point(leftMargin, topMargin));
-                    AddPolyLine(new Point(centerX, centerY), new Point(letterRight, letterBottom));
+                    AddPolyLine(new Point(leftMargin, topMargin), 
+                        new Point(letterRight, topMargin),
+                        new Point(letterRight, letterBottom),
+                        new Point(leftMargin, letterBottom),
+                        new Point(leftMargin, topMargin));
+                    AddPolyLine(new Point(centerX, centerY), 
+                        new Point(letterRight, letterBottom));
                     break;
                 case 'R':
-                    AddPolyLine(new Point(leftMargin, letterBottom), new Point(leftMargin, topMargin)
-                        , new Point(letterRight, topMargin)
-                        , new Point(letterRight, centerY)
-                        , new Point(leftMargin, centerY)
-                        , new Point(letterRight, letterBottom));
+                    AddPolyLine(new Point(leftMargin, letterBottom),
+                        new Point(leftMargin, topMargin),
+                        new Point(letterRight, topMargin),
+                        new Point(letterRight, centerY),
+                        new Point(leftMargin, centerY),
+                        new Point(letterRight, letterBottom));
                     break;
                 case 'T':
-                    AddPolyLine(new Point(leftMargin, topMargin), new Point(letterRight, topMargin));
-                    AddPolyLine(new Point(centerX, topMargin), new Point(centerX, letterBottom));
+                    AddPolyLine(new Point(leftMargin, topMargin), 
+                        new Point(letterRight, topMargin));
+                    AddPolyLine(new Point(centerX, topMargin), 
+                        new Point(centerX, letterBottom));
                     break;
                 case 'U':
-                    AddPolyLine(new Point(leftMargin, topMargin), new Point(leftMargin, letterBottom)
-                        , new Point(letterRight, letterBottom)
-                        , new Point(letterRight, topMargin));
+                    AddPolyLine(new Point(leftMargin, topMargin), 
+                        new Point(leftMargin, letterBottom),
+                        new Point(letterRight, letterBottom),
+                        new Point(letterRight, topMargin));
                     break;
                 case 'V':
-                    AddPolyLine(new Point(leftMargin, topMargin), new Point(centerX, letterBottom), new Point(letterRight, topMargin));
+                    AddPolyLine(new Point(leftMargin, topMargin), 
+                        new Point(centerX, letterBottom), 
+                        new Point(letterRight, topMargin));
                     break;
                 case 'W':
-                    AddPolyLine(new Point(leftMargin, topMargin), new Point(leftMargin, letterBottom)
-                        , new Point(centerX, centerY)
-                        , new Point(letterRight, letterBottom)
-                        , new Point(letterRight, topMargin));
+                    AddPolyLine(new Point(leftMargin, topMargin), 
+                        new Point(leftMargin, letterBottom),
+                        new Point(centerX, centerY),
+                        new Point(letterRight, letterBottom),
+                        new Point(letterRight, topMargin));
                     break;
                 case 'X':
-                    AddPolyLine(new Point(leftMargin, topMargin), new Point(letterRight, letterBottom));
-                    AddPolyLine(new Point(letterRight, topMargin), new Point(leftMargin, letterBottom));
+                    AddPolyLine(new Point(leftMargin, topMargin), 
+                        new Point(letterRight, letterBottom));
+                    AddPolyLine(new Point(letterRight, topMargin), 
+                        new Point(leftMargin, letterBottom));
                     break;
                 case 'Y':
-                    AddPolyLine(new Point(leftMargin, topMargin), new Point(centerX, centerY)
-                        , new Point(letterRight, topMargin));
-                    AddPolyLine(new Point(centerX, centerY), new Point(centerX, letterBottom));
+                    AddPolyLine(new Point(leftMargin, topMargin), 
+                        new Point(centerX, centerY),
+                        new Point(letterRight, topMargin));
+                    AddPolyLine(new Point(centerX, centerY), 
+                        new Point(centerX, letterBottom));
                     break;
                 case 'Z':
                     AddPolyLine(new Point(leftMargin, topMargin), new Point(letterRight, topMargin)
@@ -236,11 +253,13 @@ namespace Stroids.Game
                     var num6 = (int)(letterBottom - letterHeight * 0.2);
                     var num7 = (int)(leftMargin + letterWidth * 0.25);
                     var num8 = (int)(letterRight - letterWidth * 0.25);
-                    AddPolyLine(new Point(centerX, topMargin), new Point(letterRight, letterBottom)
-                        , new Point(num8, num6)
-                        , new Point(num7, num6)
-                        , new Point(leftMargin, letterBottom)
-                        , new Point(centerX, topMargin));
+                    AddPolyLine(
+                        new Point(centerX, topMargin), 
+                        new Point(letterRight, letterBottom),
+                        new Point(num8, num6),
+                        new Point(num7, num6),
+                        new Point(leftMargin, letterBottom),
+                        new Point(centerX, topMargin));
                     break;
                 case 'x':
                     AddPolyLine(new Point(leftMargin, centerY), new Point(letterRight, letterBottom));
@@ -290,7 +309,7 @@ namespace Stroids.Game
             _pensPolyColor.Clear();
             _polyLines.Clear();
         }
-        
+
         public void Draw(GraphicsDevice g)
         {
             if (_points.Count % 2 != 0)
@@ -319,7 +338,7 @@ namespace Stroids.Game
                         Position = new Vector3(b.X, b.Y, 0)
                     }
                 };
-                int[] indices = {0, 1};
+                int[] indices = { 0, 1 };
 
                 g.DrawUserIndexedPrimitives(PrimitiveType.LineStrip, vertices, 0, 2, indices, 0, 1);
             }
@@ -331,7 +350,7 @@ namespace Stroids.Game
 
                 var len = polygon.Length;
 
-                VertexPositionColor[] vertices = new VertexPositionColor[len];
+                var vertices = new VertexPositionColor[len];
                 for (int k = 0; k < len; k++)
                 {
                     vertices[k] = new VertexPositionColor
@@ -341,11 +360,10 @@ namespace Stroids.Game
                     };
                 }
 
-
-                var indices = new int[(len + 1) ];
+                var indices = new int[len + 1];
                 for (int k = 0; k < len; k++)
                 {
-                    indices[k] = (short)(k);
+                    indices[k] = (short)k;
                 }
                 g.DrawUserIndexedPrimitives(PrimitiveType.LineStrip, vertices, 0, len, indices, 0, len);
             }
@@ -363,11 +381,11 @@ namespace Stroids.Game
                         Position = new Vector3(points[i].X, points[i].Y, 0)
                     };
                 }
-                var indices = new int[(len * 2) - 2];
+                var indices = new int[len * 2 - 2];
                 for (int i = 0; i < len - 1; i++)
                 {
-                    indices[i * 2] = (short)(i);
-                    indices[(i * 2) + 1] = (short)(i + 1);
+                    indices[i * 2] = (short)i;
+                    indices[i * 2 + 1] = (short)(i + 1);
                 }
                 g.DrawUserIndexedPrimitives(PrimitiveType.LineList, vertices, 0, len, indices, 0, len - 1);
             }

@@ -1,13 +1,23 @@
 ﻿using System;
+using System.Runtime.Serialization;
 using Microsoft.Xna.Framework;
 
 namespace Stroids.Game
 {
-    internal class Asteroid : ScreenObject
+    [Serializable]
+    internal class Asteroid : ScreenObject, ISerializable
     {
         private const int SizeIncr = 220;
         private AsteroidSize _size;
         private float _rotateSpeed;
+
+        // The special constructor is used to deserialize values.
+        public Asteroid(SerializationInfo info, StreamingContext context)
+            :base(info, context)
+        {
+            _size = (AsteroidSize)info.GetValue("size", typeof(int));
+            _rotateSpeed = (float)info.GetValue("rotate", typeof(float));
+        }
 
         public Asteroid(AsteroidSize size)
             : base(new Point(0, 0))
@@ -79,13 +89,12 @@ namespace Stroids.Game
             RandomVelocity();
             return _size;
         }
-    }
 
-    public enum AsteroidSize
-    {
-        Dne,
-        Small,
-        Medium,
-        Large
+        void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            info.AddValue("size", _size);
+            info.AddValue("rotate", _rotateSpeed);
+            base.GetObjectData(info, context);
+        }
     }
 }

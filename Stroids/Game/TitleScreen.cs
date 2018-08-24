@@ -22,30 +22,6 @@ namespace Stroids.Game
             _title = "READY PLAYER ONE";
         }
 
-        public AsteroidsGame.GameState Update(KeyboardState state, KeyboardState previousState)
-        {
-            // get out of title screen mode by pressing 'fire' or arrow keys
-            if (
-                (state.IsKeyDown(Keys.Space) && !previousState.IsKeyDown(Keys.Space) ||
-                 state.IsKeyDown(Keys.Right) && !previousState.IsKeyDown(Keys.Right) ||
-                 state.IsKeyDown(Keys.Left) && !previousState.IsKeyDown(Keys.Left) ||
-                 state.IsKeyDown(Keys.Up) && !previousState.IsKeyDown(Keys.Up)))
-            {
-                return AsteroidsGame.GameState.Game;
-            }
-
-            if (state.IsKeyDown(Keys.E) && !previousState.IsKeyDown(Keys.E))
-            {
-                return AsteroidsGame.GameState.Evolve;
-            }
-            
-            if (state.IsKeyDown(Keys.Escape) && !previousState.IsKeyDown(Keys.Escape))
-            {
-                return AsteroidsGame.GameState.Exit;
-            }
-            return AsteroidsGame.GameState.Title;
-        }
-
         public void Draw(ScreenCanvas screenCanvas, int width, int height)
         {
             if (_letterSize > 1000 || _letterSize < 40)

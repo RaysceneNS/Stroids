@@ -8,8 +8,6 @@ namespace Stroids.ai
         private int _bestPlayerNo;//the position in the array that the best player of this generation is in
         private int _allTimeBestScore;//the score of the best ever player
         private Player _allTimeBestPlayer;
-        private int _generation;
-        private int _activeIndex;
 
         /// <summary>
         /// constructor
@@ -27,46 +25,38 @@ namespace Stroids.ai
         /// </summary>
         public void UpdateActive()
         {
-            var activePlayer = _players[_activeIndex];
+            var activePlayer = _players[ActiveIndex];
             var stimulus = Player.CreateStimuli(); // gather inputs for neural net
             activePlayer.Respond(stimulus); //act on outputs from neural network
         }
 
         public Player ActivePlayer()
         {
-            return _players[_activeIndex];
+            return _players[ActiveIndex];
         }
 
         public bool SelectNextPlayer()
         {
-            if (Done())
+            if (IsDone())
             {
                 return false;
             }
 
             //generate a new random ai
-            _players[_activeIndex + 1] = new Player();
+            _players[ActiveIndex + 1] = new Player();
 
-            _activeIndex++;
+            ActiveIndex++;
             return true;
         }
 
-        private bool Done()
+        private bool IsDone()
         {
-            return (_activeIndex+1) == _players.Length;
+            return ActiveIndex+1 == _players.Length;
         }
 
-        public int Generation
-        {
-            get { return _generation; }
-        }
+        public int Generation { get; private set; }
 
-        public int ActiveIndex {
-            get
-            {
-                return _activeIndex;
-            }
-        }
+        public int ActiveIndex { get; private set; }
 
         /// <summary>
         /// sets the best player globally and for this gen
@@ -117,8 +107,8 @@ namespace Stroids.ai
             }
 
             _players = newPlayers;
-            _generation += 1;
-            _activeIndex = 0;
+            Generation += 1;
+            ActiveIndex = 0;
         }
 
         /// <summary>

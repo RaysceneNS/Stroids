@@ -8,8 +8,7 @@ namespace Stroids.ai
         private readonly NeuralNet _brain;
         private float? _fitness;
         private int _lifespan;
-        private int _score;
-        private float _hitRate;
+        private bool _moved;
 
         internal Player() : this(new NeuralNet(9, 16, 4))
         {
@@ -20,17 +19,9 @@ namespace Stroids.ai
             _brain = brain;
         }
 
-        public int Score
-        {
-            get { return _score; }
-            set { _score = value; }
-        }
+        public int Score { get; set; }
 
-        public float HitRate
-        {
-            get { return _hitRate; }
-            set { _hitRate = value; }
-        }
+        public float HitRate { get; set; }
 
         /// <summary>
         /// for genetic algorithm
@@ -40,8 +31,16 @@ namespace Stroids.ai
             var fit = Score * 5f;
             fit += _lifespan * 0.8f;
 
-            if(!float.IsInfinity(HitRate))
+            if (!float.IsInfinity(HitRate))
+            {
                 fit += HitRate * 2f;
+            }
+
+            if (_moved)
+            {
+                fit *= 2;
+            }
+
             return fit;
         }
 
@@ -49,8 +48,10 @@ namespace Stroids.ai
         {
             get
             {
-                if(_fitness == null)
+                if (_fitness == null)
+                {
                     _fitness = CalculateFitness();
+                }
                 return _fitness.GetValueOrDefault();
             }
         }
@@ -174,17 +175,27 @@ namespace Stroids.ai
             var output = _brain.Output(stimulus);
 
             // map first output to thrust 
-            lvl.Thrust(output[0] > 0.8);
+            if (output[0] > 0.8)
+            {
+                lvl.Thrust(true);
+                _moved = true;
+            }
+            else
+            {
+                lvl.Thrust(false);
+            }
 
             if (output[1] > 0.8)
             {
                 //output 1 is turn left
                 lvl.Left();
+                _moved = true;
             }
-            else if (output[2] > 0.8)
+            if (output[2] > 0.8)
             {
                 //output 2 is turn right
                 lvl.Right();
+                _moved = true;
             }
 
             //shooting

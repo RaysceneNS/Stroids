@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
 using Microsoft.Xna.Framework;
 
 namespace Stroids.Game
@@ -9,9 +11,6 @@ namespace Stroids.Game
     {
         private const int SafeDistance = 2000;
         private List<Asteroid> _asteroids;
-        public event Action OnLargeExplosion;
-        public event Action OnMediumExplosion;
-        public event Action OnSmallExplosion;
 
         public AsteroidBelt(int numAsteroids)
         {
@@ -22,8 +21,7 @@ namespace Stroids.Game
         {
             StartBelt(numAsteroids, minSize);
         }
-
-
+        
         public int CheckPointCollisions(Point ptCheck)
         {
             var num = 0;
@@ -41,16 +39,13 @@ namespace Stroids.Game
                     {
                         case AsteroidSize.Dne:
                             num = 250;
-                            OnLargeExplosion?.Invoke();
                             _asteroids.RemoveAt(count);
                             break;
                         case AsteroidSize.Small:
                             num = 100;
-                            OnMediumExplosion?.Invoke();
                             break;
                         case AsteroidSize.Medium:
                             num = 50;
-                            OnSmallExplosion?.Invoke();
                             break;
                     }
 
@@ -116,6 +111,26 @@ namespace Stroids.Game
         IEnumerator IEnumerable.GetEnumerator()
         {
             return this._asteroids.GetEnumerator();
+        }
+
+        public byte[] SaveState()
+        {
+            using (var ms = new MemoryStream())
+            {
+                var formatter = new BinaryFormatter();
+                formatter.Serialize(ms, _asteroids);
+                return ms.ToArray();
+            }
+        }
+
+        public void LoadState(byte[] asteroidState)
+        {
+            using (var ms = new MemoryStream(asteroidState))
+            {
+                var formatter = new BinaryFormatter();
+                var belt = (List<Asteroid>)formatter.Deserialize(ms);
+                this._asteroids = belt;
+            }
         }
     }
 }

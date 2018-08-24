@@ -15,16 +15,12 @@ namespace Stroids
     {
         GraphicsDeviceManager _graphics;
         private BasicEffect _basicEffect;
-        
         private readonly TitleScreen _currTitle;
-        private Level _level;
-
         private GameState _gameState;
         private readonly Score _score;
         private readonly ScreenCanvas _screenCanvas;
-        private KeyboardState _previousState;
+        private KeyboardState _previousKeyboardState;
         private readonly Population _population;
-
         private static AsteroidsGame _instance;
         private static readonly object SyncRoot = new object();
 
@@ -40,7 +36,9 @@ namespace Stroids
                     lock (SyncRoot)
                     {
                         if (_instance == null)
+                        {
                             _instance = new AsteroidsGame();
+                        }
                     }
                 }
                 return _instance;
@@ -56,8 +54,7 @@ namespace Stroids
             _screenCanvas = new ScreenCanvas();
             _score = new Score();
             _currTitle = new TitleScreen();
-
-            _population = new Population(10);
+            _population = new Population(20);
 
             this.IsFixedTimeStep = true;
         }
@@ -65,11 +62,8 @@ namespace Stroids
         /// <summary>
         /// Returns the current level in the game
         /// </summary>
-        internal Level Level
-        {
-            get { return _level; }
-        }
-        
+        internal Level Level { get; private set; }
+
         /// <summary>
         /// Allows the game to perform any initialization it needs to before starting to run.
         /// This is where it can query for any required services and load any non-graphic
@@ -79,7 +73,7 @@ namespace Stroids
         protected override void Initialize()
         {
             _gameState = GameState.Title;
-            _previousState = Keyboard.GetState();
+            _previousKeyboardState = Keyboard.GetState();
             base.Initialize();
         }
 
@@ -103,7 +97,7 @@ namespace Stroids
                 VertexColorEnabled = true
             };
 
-            _level = new Level(Services, _score);
+            Level = new Level(_score);
         }
 
         /// <summary>
@@ -113,94 +107,129 @@ namespace Stroids
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            // Poll for current keyboard state
-            var state = Keyboard.GetState();
-
+            var keyboardState = Keyboard.GetState();
             switch (_gameState)
             {
                 case GameState.Title:
                 {
-                    _gameState = _currTitle.Update(state, _previousState);
-                    if (_gameState == GameState.Game)
-                    {
-                        //transition from title to game. 
-                        _score.Reset();
-                        _level.StartGame();
-                    }
-                    if (_gameState == GameState.Evolve)
-                    {
-                        //transition from title to game. 
-                        this.TargetElapsedTime = new TimeSpan(0, 0, 0, 0, 1);
-                        _score.Reset();
-                        _level.StartGame();
-                    }
-                    if (_gameState == GameState.Exit)
-                    {
-                        //transition to exit;
-                        Exit();
-                    }
+                    UpdateTitleScreen(keyboardState);
                     break;
                 }
                 case GameState.Game:
                 {
-                    _gameState = _level.Update(state, _previousState);
-                    if (_gameState == GameState.Title)
-                    {
-                        //transition to title
-                        _score.CancelGame();
-                        _currTitle.Reset();
-                    }
+                    UpdateGame(keyboardState);
                     break;
                 }
                 case GameState.Evolve:
                 {
-                    //if any players are alive then update them
-                    _population.UpdateActive();
+                    UpdateEvolve(keyboardState);
+                    break;
+                }
+            }
+            _previousKeyboardState = keyboardState;
+            base.Update(gameTime);
+        }
 
-                    var newState = _level.Update(state, _previousState);
+        private void UpdateEvolve(KeyboardState keyboardState)
+        {
+            //if any players are alive then update them
+            _population.UpdateActive();
 
-                    if (newState == GameState.Title)
+            var newState = Level.Update(keyboardState, _previousKeyboardState);
+
+            if (newState == GameState.Title)
+            {
+                if (Level.IsDone())
+                {
+                    //game over for this player.. 
+                    var activePlayer = _population.ActivePlayer();
+                    activePlayer.Score = _score.CurrentScore;
+                    activePlayer.HitRate = _score.ShotsHit / (float) Level.ShotsFired;
+
+                    //select the next in line to try
+                    if (!_population.SelectNextPlayer())
                     {
-                        if (_level.Done())
-                        {
-                            //game over for this player.. 
-                            var activePlayer = _population.ActivePlayer();
-                            activePlayer.Score = _score.CurrentScore;
-                            activePlayer.HitRate = _score.ShotsHit / (float) Level.ShotsFired;
+                        //all the players have played their last upon the stage of life,
+                        // score each and perform a selection of the fitest players to pass
+                        // their genetic material to the next gen.
+                        _population.NaturalSelection();
+                        //reset the score and let this next gen play
+                        _score.Reset();
+                        Level.StartGame();
+                    }
+                    else
+                    {
 
-                            //select the next in line to try
-                            if (_population.SelectNextPlayer())
-                            {
-                                _score.Reset();
-                                _level.StartGame();
-                            }
-                            else
-                            {
-                                //all the players have played their last upon the stage of life,
-                                // score each and perform a selection of the fitest players to pass
-                                // their genetic material to the next gen.
-                                _population.NaturalSelection();
-
-                                //reset the score and let this next gen play
-                                _score.Reset();
-                                _level.StartGame();
-                            }
-                        }
-                        else
-                        {
-                            //game evolution exited 
-                            _gameState = GameState.Title;
-                            //transition to title
-                            _score.CancelGame();
-                            _currTitle.Reset();
-                        }
+                        //reset the score and let this next gen play
+                        _score.Reset();
+                        Level.ReStartGame();
                     }
                 }
-                break;
+                else
+                {
+                    //game evolution exited 
+                    _gameState = GameState.Title;
+                    //transition to title
+                    _score.CancelGame();
+                    _currTitle.Reset();
+                }
+            }
+        }
+
+        private void UpdateGame(KeyboardState keyboardState)
+        {
+            _gameState = Level.Update(keyboardState, _previousKeyboardState);
+            if (_gameState == GameState.Title)
+            {
+                //transition to title
+                _score.CancelGame();
+                _currTitle.Reset();
+            }
+        }
+
+        private void UpdateTitleScreen(KeyboardState keyboardState)
+        {
+            var trigger = _gameState;
+            // get out of title screen mode by pressing 'fire' or arrow keys
+            if (keyboardState.IsKeyDown(Keys.Space) && !_previousKeyboardState.IsKeyDown(Keys.Space) ||
+                keyboardState.IsKeyDown(Keys.Right) && !_previousKeyboardState.IsKeyDown(Keys.Right) ||
+                keyboardState.IsKeyDown(Keys.Left) && !_previousKeyboardState.IsKeyDown(Keys.Left) ||
+                keyboardState.IsKeyDown(Keys.Up) && !_previousKeyboardState.IsKeyDown(Keys.Up))
+            {
+                trigger = GameState.Game;
+            }
+
+            if (keyboardState.IsKeyDown(Keys.E) && !_previousKeyboardState.IsKeyDown(Keys.E))
+            {
+                trigger = GameState.Evolve;
+            }
+
+            if (keyboardState.IsKeyDown(Keys.Escape) && !_previousKeyboardState.IsKeyDown(Keys.Escape))
+            {
+                trigger = GameState.Exit;
             }
             
-            _previousState = state;
-            base.Update(gameTime);
+            switch (trigger)
+            {
+                case GameState.Game:
+                    //transition from title to game. 
+                    _gameState = trigger;
+                    _score.Reset();
+                    Level.StartGame();
+                    break;
+                case GameState.Evolve:
+                    //transition from title to evolution games. 
+                    _gameState = trigger;
+                    this.TargetElapsedTime = TimeSpan.FromMilliseconds(1);
+                    _score.Reset();
+                    Level.StartGame();
+                    break;
+                case GameState.Exit:
+                    //transition to exit;
+                    _gameState = trigger;
+                    Exit();
+                    break;
+            }
         }
 
         /// <summary>
@@ -231,15 +260,13 @@ namespace Stroids
                 }
                 case GameState.Game:
                 {
-                    _level.Draw(_screenCanvas, width, height);
+                    Level.Draw(_screenCanvas, width, height);
                     break;
                 }
                 case GameState.Evolve:
                 {
-                    _level.Draw(_screenCanvas, width, height);
-
-                    //print evolution stats
-                    _screenCanvas.AddText($"GEN {_population.Generation}-{_population.ActiveIndex}", Justify.Right, 100, 200, 400, width, height);
+                    Level.Draw(_screenCanvas, width, height);
+                    _screenCanvas.AddText($"GEN {_population.Generation}.{_population.ActiveIndex}", Justify.Right, 100, 200, 400, width, height);
                     break;
                 }
             }
@@ -247,7 +274,6 @@ namespace Stroids
             foreach (var pass in _basicEffect.CurrentTechnique.Passes)
             {
                 pass.Apply();
-                //move screen canvas to graphics device
                 _screenCanvas.Draw(GraphicsDevice);
             }
             base.Draw(gameTime);
@@ -269,15 +295,6 @@ namespace Stroids
             }
             _screenCanvas.AddText(str, Justify.Left, 100, 200, 400, width, height);
             _screenCanvas.AddText(_score.HiScore.ToString("000000"), Justify.Center, 100, 200, 400, width, height);
-        }
-
-        internal enum GameState
-        {
-            Init,
-            Title,
-            Game,
-            Evolve,
-            Exit
         }
     }
 }

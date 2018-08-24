@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Linq;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Audio;
-using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Input;
 
 namespace Stroids.Game
@@ -13,71 +11,63 @@ namespace Stroids.Game
     /// </summary>
     internal class Level
     {
-        private Ship _ship;
         private Explosions _explosions;
         private Bullet[] _shipBullets;
-        private AsteroidBelt _asteroids;
         private int _iLevel;
         private bool _inProcess;
         private const int PauseInterval = 60;
         private int _iPauseTimer;
         private bool _paused;
-        private readonly SoundEffectInstance _soundThrustInstance;
         private readonly Score _score;
-        private readonly SoundEffect _extraShipSound;
-        private readonly SoundEffect _soundBangLarge;
-        private readonly SoundEffect _soundBangMedium;
-        private readonly SoundEffect _soundBangSmall;
-        private readonly SoundEffect _soundFire;
-        private int _shotsFired;
+        private byte[] _asteroidBeltState;
 
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="serviceProvider">The service provider that will be used to construct a ContentManager.</param>
         /// <param name="score"></param>
-        public Level(IServiceProvider serviceProvider, Score score)
+        public Level(Score score)
         {
-            // Create a new content manager to load content used just by this level.
-            var content = new ContentManager(serviceProvider, "Content");
-
-            // Load sounds.
-            var soundThrust = content.Load<SoundEffect>("Sounds/Thrust");
-            _soundThrustInstance = soundThrust.CreateInstance();
-            _extraShipSound = content.Load<SoundEffect>("Sounds/ExtraShip");
-            _soundBangLarge = content.Load<SoundEffect>("Sounds/BangLarge");
-            _soundBangMedium = content.Load<SoundEffect>("Sounds/BangMedium");
-            _soundBangSmall = content.Load<SoundEffect>("Sounds/BangSmall");
-            _soundFire = content.Load<SoundEffect>("Sounds/Fire");
-
             _score = score;
-            _score.OnExtraShip += delegate { _extraShipSound.Play(); };
         }
 
-        public Ship Ship
-        {
-            get { return _ship; }
-        }
+        public Ship Ship { get; private set; }
 
-        public int ShotsFired
+        public int ShotsFired { get; private set; }
+
+
+        /// <summary>
+        /// Start game with asteroids in same position as last play.
+        /// </summary>
+        internal void ReStartGame()
         {
-            get { return _shotsFired; }
+            _iLevel = 4;
+            _inProcess = true;
+            Ship = new Ship();
+            _shipBullets = new Bullet[4];
+            for (var i = 0; i < 4; i++)
+            {
+                _shipBullets[i] = new Bullet();
+            }
+            AsteroidBelt = new AsteroidBelt(_iLevel);
+            AsteroidBelt.LoadState(_asteroidBeltState);
+
+            _explosions = new Explosions();
+            _paused = false;
+            _iPauseTimer = PauseInterval;
         }
 
         internal void StartGame()
         {
             _iLevel = 4;
             _inProcess = true;
-            _ship = new Ship();
+            Ship = new Ship();
             _shipBullets = new Bullet[4];
             for (var i = 0; i < 4; i++)
             {
                 _shipBullets[i] = new Bullet();
             }
-            _asteroids = new AsteroidBelt(_iLevel);
-            _asteroids.OnLargeExplosion += delegate { _soundBangLarge.Play(); };
-            _asteroids.OnMediumExplosion += delegate { _soundBangMedium.Play(); };
-            _asteroids.OnSmallExplosion += delegate { _soundBangSmall.Play(); };
+            AsteroidBelt = new AsteroidBelt(_iLevel);
+            _asteroidBeltState = AsteroidBelt.SaveState();
 
             _explosions = new Explosions();
             _paused = false;
@@ -86,13 +76,9 @@ namespace Stroids.Game
 
         private void ExplodeShip()
         {
-            _soundThrustInstance.Pause();
-            _soundBangLarge.Play();
-            _soundBangMedium.Play();
-
-            _ship.Explode();
-            var currLoc = _ship.GetCurrLoc();
-            foreach (var point in _ship.PointsTransformed)
+            Ship.Explode();
+            var currLoc = Ship.GetCurrLoc();
+            foreach (var point in Ship.PointsTransformed)
             {
                 _explosions.AddExplosion(new Point(point.X + currLoc.X, point.Y + currLoc.Y), 2);
             }
@@ -100,14 +86,18 @@ namespace Stroids.Game
 
         private void HyperspaceJump()
         {
-            if (!_paused && _ship.IsAlive() && !_ship.Hyperspace())
+            if (!_paused && Ship.IsAlive() && !Ship.Hyperspace())
+            {
                 ExplodeShip();
+            }
         }
 
         internal void Left()
         {
-            if (!_paused && _ship.IsAlive())
-                _ship.RotateLeft();
+            if (!_paused && Ship.IsAlive())
+            {
+                Ship.RotateLeft();
+            }
         }
 
         private void Pause()
@@ -118,13 +108,15 @@ namespace Stroids.Game
 
         internal void Right()
         {
-            if (!_paused && _ship.IsAlive())
-                _ship.RotateRight();
+            if (!_paused && Ship.IsAlive())
+            {
+                Ship.RotateRight();
+            }
         }
 
         internal void Shoot()
         {
-            if (_paused || !_ship.IsAlive())
+            if (_paused || !Ship.IsAlive())
             {
                 return;
             }
@@ -139,9 +131,8 @@ namespace Stroids.Game
                 }
                 else
                 {
-                    _shotsFired = ShotsFired + 1;
-                    bullet.Shoot(_ship.GetCurrLoc(), _ship.GetRadians(), _ship.GetVelocityX(), _ship.GetVelocityY());
-                    _soundFire.Play();
+                    ShotsFired = ShotsFired + 1;
+                    bullet.Shoot(Ship.GetCurrLoc(), Ship.GetRadians(), Ship.GetVelocityX(), Ship.GetVelocityY());
                     break;
                 }
             }
@@ -149,43 +140,42 @@ namespace Stroids.Game
 
         private bool CheckPointInAsteroid(Point ptCheck, Score score)
         {
-            var num = _asteroids.CheckPointCollisions(ptCheck);
+            var num = AsteroidBelt.CheckPointCollisions(ptCheck);
             if (num <= 0)
+            {
                 return false;
+            }
             score.AddScore(num);
             return true;
         }
 
-        public bool Done()
+        public bool IsDone()
         {
             return !_inProcess;
         }
 
         internal void Thrust(bool bThrustOn)
         {
-            if (_paused || !_ship.IsAlive())
+            if (_paused || !Ship.IsAlive())
             {
                 return;
             }
 
             if (bThrustOn)
             {
-                _ship.Thrust();
-
-                _soundThrustInstance.Play();
+                Ship.Thrust();
             }
             else
             {
-                _ship.DecayThrust();
-                _soundThrustInstance.Pause();
+                Ship.DecayThrust();
             }
         }
 
-        public AsteroidsGame.GameState Update(KeyboardState state, KeyboardState previousState)
+        public GameState Update(KeyboardState state, KeyboardState previousState)
         {
             if (state.IsKeyDown(Keys.Escape) && !previousState.IsKeyDown(Keys.Escape))
             {
-                return AsteroidsGame.GameState.Title;
+                return GameState.Title;
             }
 
             if (state.IsKeyDown(Keys.Down) && !previousState.IsKeyDown(Keys.Down))
@@ -232,30 +222,30 @@ namespace Stroids.Game
             }
             else
             {
-                if (!_ship.IsAlive() && _explosions.Count() == 0)
+                if (!Ship.IsAlive() && _explosions.Count() == 0)
                 {
                     if (!_score.HasReserveShips())
                     {
                         _inProcess = false;
                     }
-                    else if (_asteroids.IsCenterSafe())
+                    else if (AsteroidBelt.IsCenterSafe())
                     {
                         _score.UseNewShip();
-                        _ship = new Ship();
+                        Ship = new Ship();
                     }
                 }
-                if (_explosions.Count() == 0 && !_asteroids.Any())
+                if (_explosions.Count() == 0 && !AsteroidBelt.Any())
                 {
                     _iLevel++;
-                    _asteroids.StartBelt(_iLevel, AsteroidSize.Large);
+                    AsteroidBelt.StartBelt(_iLevel, AsteroidSize.Large);
                 }
 
-                _ship.Move();
+                Ship.Move();
                 foreach (var bullet in _shipBullets)
                 {
                     bullet.Move();
                 }
-                _asteroids.Move();
+                AsteroidBelt.Move();
                 _explosions.Move();
 
                 foreach (var bullet in _shipBullets)
@@ -268,11 +258,11 @@ namespace Stroids.Game
                     }
                 }
 
-                if (_ship.IsAlive())
+                if (Ship.IsAlive())
                 {
-                    foreach (var shipPoint in _ship.PointsTransformed)
+                    foreach (var shipPoint in Ship.PointsTransformed)
                     {
-                        var currLoc = _ship.GetCurrLoc();
+                        var currLoc = Ship.GetCurrLoc();
                         var point = new Point(shipPoint.X + currLoc.X, shipPoint.Y + currLoc.Y);
                         if (!CheckPointInAsteroid(point, _score))
                         {
@@ -285,13 +275,10 @@ namespace Stroids.Game
             }
 
             // return the state that we should move to, title or game
-            return this.Done() ? AsteroidsGame.GameState.Title : AsteroidsGame.GameState.Game;
+            return this.IsDone() ? GameState.Title : GameState.Game;
         }
 
-        public AsteroidBelt AsteroidBelt
-        {
-            get { return _asteroids; }
-        }
+        public AsteroidBelt AsteroidBelt { get; private set; }
 
         internal void Draw(ScreenCanvas sc, int width, int height)
         {
@@ -302,13 +289,13 @@ namespace Stroids.Game
                     sc.AddText("PAUSE", Justify.Center, 2500, 200, 400, width, height);
                 }
             }
-            _ship.Draw(sc, width, height);
+            Ship.Draw(sc, width, height);
 
             foreach (var bullet in _shipBullets)
             {
                 bullet.Draw(sc, width, height);
             }
-            _asteroids.Draw(sc, width, height);
+            AsteroidBelt.Draw(sc, width, height);
             _explosions.Draw(sc, width, height);
             //score.Draw(sc, width, height);
         }

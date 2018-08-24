@@ -50,8 +50,10 @@
     <Compile Include="ai\Player.cs" />
     <Compile Include="ai\Population.cs" />
     <Compile Include="ai\RandomExtensions.cs" />
+    <Compile Include="GameState.cs" />
     <Compile Include="Game\Asteroid.cs" />
     <Compile Include="Game\AsteroidBelt.cs" />
+    <Compile Include="Game\AsteroidSize.cs" />
     <Compile Include="Game\Bullet.cs" />
     <Compile Include="Game\Explosions.cs" />
     <Compile Include="Game\Explosion.cs" />
