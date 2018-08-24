@@ -21,31 +21,9 @@ namespace Stroids
         private readonly ScreenCanvas _screenCanvas;
         private KeyboardState _previousKeyboardState;
         private readonly Population _population;
-        private static AsteroidsGame _instance;
-        private static readonly object SyncRoot = new object();
 
-        /// <summary>
-        /// The one and only game instance
-        /// </summary>
-        public static AsteroidsGame Instance
-        {
-            get
-            {
-                if (_instance == null)
-                {
-                    lock (SyncRoot)
-                    {
-                        if (_instance == null)
-                        {
-                            _instance = new AsteroidsGame();
-                        }
-                    }
-                }
-                return _instance;
-            }
-        }
 
-        private AsteroidsGame()
+        internal AsteroidsGame()
         {
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
@@ -54,7 +32,7 @@ namespace Stroids
             _screenCanvas = new ScreenCanvas();
             _score = new Score();
             _currTitle = new TitleScreen();
-            _population = new Population(20);
+            _population = new Population(this, 20);
 
             this.IsFixedTimeStep = true;
         }
@@ -144,7 +122,6 @@ namespace Stroids
                     //game over for this player.. 
                     var activePlayer = _population.ActivePlayer();
                     activePlayer.Score = _score.CurrentScore;
-                    activePlayer.HitRate = _score.ShotsHit / (float) Level.ShotsFired;
 
                     //select the next in line to try
                     if (!_population.SelectNextPlayer())

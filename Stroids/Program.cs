@@ -7,7 +7,7 @@ namespace Stroids
         [STAThread]
         private static void Main()
         {
-            using (var game = AsteroidsGame.Instance)
+            using (var game = new AsteroidsGame())
             {
                 game.Run();
             }

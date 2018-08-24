@@ -4,19 +4,23 @@ namespace Stroids.ai
 {
     public class Population
     {
+        private readonly AsteroidsGame _asteroidsGame;
         private Player[] _players;//all the players
         private int _bestPlayerNo;//the position in the array that the best player of this generation is in
         private int _allTimeBestScore;//the score of the best ever player
         private Player _allTimeBestPlayer;
+        private int _generation;
+        private int _activeIndex;
 
         /// <summary>
         /// constructor
         /// </summary>
+        /// <param name="asteroidsGame"></param>
         /// <param name="size"></param>
-        internal Population(int size)
+        internal Population(AsteroidsGame asteroidsGame, int size)
         {
+            _asteroidsGame = asteroidsGame;
             _players = new Player[size];
-
             _players[0] = new Player();
         }
 
@@ -25,14 +29,13 @@ namespace Stroids.ai
         /// </summary>
         public void UpdateActive()
         {
-            var activePlayer = _players[ActiveIndex];
-            var stimulus = Player.CreateStimuli(); // gather inputs for neural net
-            activePlayer.Respond(stimulus); //act on outputs from neural network
+            var activePlayer = _players[_activeIndex];
+            activePlayer.Respond(_asteroidsGame, StimulusBuilder.Create(_asteroidsGame)); 
         }
 
         public Player ActivePlayer()
         {
-            return _players[ActiveIndex];
+            return _players[_activeIndex];
         }
 
         public bool SelectNextPlayer()
@@ -43,20 +46,26 @@ namespace Stroids.ai
             }
 
             //generate a new random ai
-            _players[ActiveIndex + 1] = new Player();
+            _players[_activeIndex + 1] = new Player();
 
-            ActiveIndex++;
+            _activeIndex++;
             return true;
         }
 
         private bool IsDone()
         {
-            return ActiveIndex+1 == _players.Length;
+            return _activeIndex + 1 == _players.Length;
         }
 
-        public int Generation { get; private set; }
+        public int Generation
+        {
+            get { return _generation; }
+        }
 
-        public int ActiveIndex { get; private set; }
+        public int ActiveIndex
+        {
+            get { return _activeIndex; }
+        }
 
         /// <summary>
         /// sets the best player globally and for this gen
@@ -100,15 +109,15 @@ namespace Stroids.ai
             for (int i = 1; i < _players.Length; i++)
             {
                 //for each remaining spot in the next generation
-                var newPlayer = i < _players.Length / 2 ? 
-                    SelectFitPlayer().Clone() :
-                    SelectFitPlayer().Crossover(SelectFitPlayer());
-                newPlayers[i] = newPlayer.Mutate(); 
+                var newPlayer = i < _players.Length / 2
+                    ? SelectFitPlayer().Clone()
+                    : SelectFitPlayer().Crossover(SelectFitPlayer());
+                newPlayers[i] = newPlayer.Mutate();
             }
 
             _players = newPlayers;
-            Generation += 1;
-            ActiveIndex = 0;
+            _generation++;
+            _activeIndex = 0;
         }
 
         /// <summary>
@@ -129,7 +138,7 @@ namespace Stroids.ai
             }
 
             var r = new Random();
-            int rand = (int) Math.Floor((decimal)r.Next((int)fitnessSum));
+            int rand = (int) Math.Floor((decimal) r.Next((int) fitnessSum));
 
             //sum is the current fitness sum
             int runningSum = 0;
