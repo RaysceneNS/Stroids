@@ -126,11 +126,11 @@ namespace Stroids.ai
         /// <returns></returns>
         private Player SelectFitPlayer()
         {
-            //this function works by randomly choosing a value between 0 and the sum of all the fitnesses
+            //this function works by randomly choosing a value between 0 and the sum of all the fitness
             //then go through all the players and add their fitness to a running sum and if that sum is greater than the random value generated that player is chosen
             //since players with a higher fitness function add more to the running sum then they have a higher chance of being chosen
 
-            //calculate the sum of all the fitnesses
+            //calculate the sum of all the fitness values
             float fitnessSum = 0;
             foreach (var t in _players)
             {

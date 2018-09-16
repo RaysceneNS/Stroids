@@ -72,8 +72,8 @@ namespace Stroids.Game
             var flag = true;
             foreach (var asteroid in _asteroids)
             {
-                var currLoc = asteroid.GetCurrLoc();
-                if (Math.Sqrt(Math.Pow(currLoc.X - 5000, 2) + Math.Pow(currLoc.Y - 3750, 2)) > SafeDistance)
+                var currentLocation = asteroid.GetCurrentLocation();
+                if (Math.Sqrt(Math.Pow(currentLocation.X - 5000, 2) + Math.Pow(currentLocation.Y - 3750, 2)) > SafeDistance)
                 {
                     continue;
                 }
@@ -95,7 +95,7 @@ namespace Stroids.Game
         {
             var rndGen = new Random();
 
-            _asteroids = new List<Asteroid>();
+            _asteroids = new List<Asteroid>(numAsteroids);
             for (var i = 0; i < numAsteroids; i++)
             {
                 var size = (AsteroidSize)3 - rndGen.Next(3 - (int)minSize + 1);

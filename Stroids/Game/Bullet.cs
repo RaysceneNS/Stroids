@@ -52,7 +52,7 @@ namespace Stroids.Game
         public void Shoot(Point locParent, float radParent, float velXParent, float velYParent)
         {
             _life = 60;
-            CurrLoc = locParent;
+            CurrentLocation = locParent;
             Radians = radParent;
 
             VelocityX = (int)(-100 * Math.Sin(Radians)) + velXParent;

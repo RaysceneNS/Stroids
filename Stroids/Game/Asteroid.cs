@@ -23,14 +23,14 @@ namespace Stroids.Game
             : base(new Point(0, 0))
         {
             _size = size;
-            CurrLoc.X = RndGen.Next(2) * 9999;
-            CurrLoc.Y = RndGen.Next(7499);
+            CurrentLocation.X = RndGen.Next(2) * 9999;
+            CurrentLocation.Y = RndGen.Next(7499);
             RandomVelocity();
             InitPoints();
         }
 
         public Asteroid(Asteroid copy)
-            : base(copy.CurrLoc)
+            : base(copy.CurrentLocation)
         {
             _size = copy._size;
             RandomVelocity();
@@ -39,7 +39,7 @@ namespace Stroids.Game
 
         public bool CheckPointInside(Point ptCheck)
         {
-            return Math.Sqrt(Math.Pow(ptCheck.X - CurrLoc.X, 2) + Math.Pow(ptCheck.Y - CurrLoc.Y, 2)) <=
+            return Math.Sqrt(Math.Pow(ptCheck.X - CurrentLocation.X, 2) + Math.Pow(ptCheck.Y - CurrentLocation.Y, 2)) <=
                    (int)_size * SizeIncr;
         }
 

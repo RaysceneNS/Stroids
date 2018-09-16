@@ -61,8 +61,8 @@ namespace Stroids.Game
 
         public bool Hyperspace()
         {
-            CurrLoc.X = RndGen.Next(8000) + 1000;
-            CurrLoc.Y = RndGen.Next(6000) + 750;
+            CurrentLocation.X = RndGen.Next(8000) + 1000;
+            CurrentLocation.Y = RndGen.Next(6000) + 750;
             return RndGen.Next(10) != 1;
         }
 

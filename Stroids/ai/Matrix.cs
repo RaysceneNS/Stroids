@@ -179,7 +179,7 @@ namespace Stroids.ai
         }
 
         /// <summary>
-        /// returns a matrix which has a random number of vaules from this matrix and the rest from the partner matrix
+        /// returns a matrix which has a random number of values from this matrix and the rest from the partner matrix
         /// </summary>
         /// <param name="partner"></param>
         /// <returns></returns>

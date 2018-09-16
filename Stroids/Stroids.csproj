@@ -45,12 +45,12 @@
     <StartupObject>Stroids.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="ai\Matrix.cs" />
-    <Compile Include="ai\NeuralNet.cs" />
-    <Compile Include="ai\Player.cs" />
-    <Compile Include="ai\Population.cs" />
-    <Compile Include="ai\RandomExtensions.cs" />
-    <Compile Include="ai\StimulusBuilder.cs" />
+    <Compile Include="AI\Matrix.cs" />
+    <Compile Include="AI\NeuralNet.cs" />
+    <Compile Include="AI\Player.cs" />
+    <Compile Include="AI\Population.cs" />
+    <Compile Include="AI\RandomExtensions.cs" />
+    <Compile Include="AI\StimulusBuilder.cs" />
     <Compile Include="GameState.cs" />
     <Compile Include="Game\Asteroid.cs" />
     <Compile Include="Game\AsteroidBelt.cs" />

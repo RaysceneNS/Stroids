@@ -10,7 +10,7 @@ namespace Stroids.Game
     {
         protected readonly List<Point> Points;
         public readonly List<Point> PointsTransformed;
-        protected Point CurrLoc;
+        protected Point CurrentLocation;
         protected float Radians;
         protected float VelocityX;
         protected float VelocityY;
@@ -28,10 +28,10 @@ namespace Stroids.Game
             PointsTransformed = new List<Point>(20);
             VelocityX = 0;
             VelocityY = 0;
-            CurrLoc = location;
+            CurrentLocation = location;
         }
 
-        public ScreenObject(SerializationInfo info, StreamingContext context)
+        protected ScreenObject(SerializationInfo info, StreamingContext context)
         {
             Radians = (float)info.GetValue("rads", typeof(float));
             Points = new List<Point>(20);
@@ -50,7 +50,7 @@ namespace Stroids.Game
             VelocityX = (float)info.GetValue("velocityX", typeof(float));
             VelocityY = (float)info.GetValue("velocityY", typeof(float));
 
-            CurrLoc = new Point( (int)info.GetValue("currLocX", typeof(int)), (int)info.GetValue("currLocY", typeof(int)));
+            CurrentLocation = new Point( (int)info.GetValue("currLocX", typeof(int)), (int)info.GetValue("currLocY", typeof(int)));
         }
 
         protected void AddPoint(Point pt)
@@ -74,15 +74,15 @@ namespace Stroids.Game
             var pointArray = new Point[alPoly.Count];
             for (var i = 0; i < alPoly.Count; i++)
             {
-                pointArray[i].X = (int)((double)(CurrLoc.X + alPoly[i].X) / 10000 * x);
-                pointArray[i].Y = (int)((double)(CurrLoc.Y + alPoly[i].Y) / 7500 * y);
+                pointArray[i].X = (int)((double)(CurrentLocation.X + alPoly[i].X) / 10000 * x);
+                pointArray[i].Y = (int)((double)(CurrentLocation.Y + alPoly[i].Y) / 7500 * y);
             }
             sc.AddPolygon(pointArray, penColor);
         }
 
-        public Point GetCurrLoc()
+        public Point GetCurrentLocation()
         {
-            return CurrLoc;
+            return CurrentLocation;
         }
 
         public float GetRadians()
@@ -117,16 +117,16 @@ namespace Stroids.Game
 
         public virtual bool Move()
         {
-            CurrLoc.X += (int)VelocityX;
-            CurrLoc.Y += (int)VelocityY;
-            if (CurrLoc.X < 0)
-                CurrLoc.X = 9999;
-            if (CurrLoc.X >= 10000)
-                CurrLoc.X = 0;
-            if (CurrLoc.Y < 0)
-                CurrLoc.Y = 7499;
-            if (CurrLoc.Y >= 7500)
-                CurrLoc.Y = 0;
+            CurrentLocation.X += (int)VelocityX;
+            CurrentLocation.Y += (int)VelocityY;
+            if (CurrentLocation.X < 0)
+                CurrentLocation.X = 9999;
+            if (CurrentLocation.X >= 10000)
+                CurrentLocation.X = 0;
+            if (CurrentLocation.Y < 0)
+                CurrentLocation.Y = 7499;
+            if (CurrentLocation.Y >= 7500)
+                CurrentLocation.Y = 0;
             return true;
         }
 
@@ -160,8 +160,8 @@ namespace Stroids.Game
             info.AddValue("velocityX", VelocityX);
             info.AddValue("velocityY", VelocityY);
 
-            info.AddValue("currLocX", CurrLoc.X);
-            info.AddValue("currLocY", CurrLoc.Y);
+            info.AddValue("currLocX", CurrentLocation.X);
+            info.AddValue("currLocY", CurrentLocation.Y);
         }
     }
 }

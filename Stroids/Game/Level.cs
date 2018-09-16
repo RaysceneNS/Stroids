@@ -77,7 +77,7 @@ namespace Stroids.Game
         private void ExplodeShip()
         {
             Ship.Explode();
-            var currLoc = Ship.GetCurrLoc();
+            var currLoc = Ship.GetCurrentLocation();
             foreach (var point in Ship.PointsTransformed)
             {
                 _explosions.AddExplosion(new Point(point.X + currLoc.X, point.Y + currLoc.Y), 2);
@@ -132,7 +132,7 @@ namespace Stroids.Game
                 else
                 {
                     ShotsFired = ShotsFired + 1;
-                    bullet.Shoot(Ship.GetCurrLoc(), Ship.GetRadians(), Ship.GetVelocityX(), Ship.GetVelocityY());
+                    bullet.Shoot(Ship.GetCurrentLocation(), Ship.GetRadians(), Ship.GetVelocityX(), Ship.GetVelocityY());
                     break;
                 }
             }
@@ -250,7 +250,7 @@ namespace Stroids.Game
 
                 foreach (var bullet in _shipBullets)
                 {
-                    var point = bullet.GetCurrLoc();
+                    var point = bullet.GetCurrentLocation();
                     if (!bullet.Available() && CheckPointInAsteroid(point, _score))
                     {
                         _explosions.AddExplosion(point);
@@ -262,7 +262,7 @@ namespace Stroids.Game
                 {
                     foreach (var shipPoint in Ship.PointsTransformed)
                     {
-                        var currLoc = Ship.GetCurrLoc();
+                        var currLoc = Ship.GetCurrentLocation();
                         var point = new Point(shipPoint.X + currLoc.X, shipPoint.Y + currLoc.Y);
                         if (!CheckPointInAsteroid(point, _score))
                         {

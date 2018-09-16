@@ -45,7 +45,7 @@ namespace Stroids.ai
             const int height = 7500;
             const int width = 10000;
             var lvl = game.Level;
-            var pos = lvl.Ship.GetCurrLoc();
+            var pos = lvl.Ship.GetCurrentLocation();
 
             //look in the direction for a number of steps
             for (int distance = 50; distance <= 2000; distance += 50)

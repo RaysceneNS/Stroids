@@ -1,6 +1,4 @@
-﻿using Microsoft.Xna.Framework.Input;
-
-namespace Stroids.Game
+﻿namespace Stroids.Game
 {
     internal class TitleScreen
     {
